@@ -20,11 +20,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { motion } from "framer-motion";
 import {
-  ArrowLeft,
   Clock,
-  Wallet,
   Users,
   Share2,
   ExternalLink,
@@ -93,8 +90,8 @@ const CampaignDetail = () => {
       toast.success(`Donation of ${donationAmount} ETH made successfully!`);
       setDonationAmount("");
       getAllCampaigns();
-    } catch (error: any) {
-      toast.error(error.message || "Donation failed.");
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : "Donation failed.");
     } finally {
       setIsLoading(false);
     }
