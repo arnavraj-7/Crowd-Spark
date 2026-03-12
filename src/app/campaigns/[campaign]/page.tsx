@@ -20,13 +20,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {motion} from "framer-motion"
+import { motion } from "framer-motion";
 import {
   ArrowLeft,
   Clock,
   Wallet,
   Users,
   Share2,
+  ExternalLink,
+  ShieldCheck,
+  ChevronLeft,
 } from "lucide-react";
 import { useContractStore } from "@/stores/contractsStore";
 import type { ProcessedCampaign } from "@/types/index.ts";
@@ -62,37 +65,7 @@ const CampaignDetail = () => {
     const isCurrent = allCampaigns.find((camp: ProcessedCampaign) => camp.id === Number(campaignId));
     if (!isCurrent) return;
     setCurrent(isCurrent);
-    console.log(isCurrent.donators);
   }, [allCampaigns, campaignId]);
-
-    // useEffect(() => {
-    //     const handleDonations = async (
-    //   campaignId: number,
-    //   campaignTitle: string,
-    //   donor: string,
-    //   donationAmount: bigint
-    // ) => {
-    //   console.log("Donation made");
-    //   toast.success(
-    //     `Donation of ${ethers.formatEther(
-    //       donationAmount
-    //     )} ETH made successfully to ${campaignTitle}`,
-    //     { duration: 5000 }
-    //   );
-    //   getAllCampaigns();
-    // };
-    //   if (!contract) return;
-    //   setCurrentContract(contract);
-    // ;
-    //   contract.on("DonationMade", handleDonations);
-    //   return () => {
-    //     if (currentContract) {
-    //       console.log("Removing event listener");
-    //       currentContract.off("DonationMade", handleDonations);
-    //     }
-    //   };
-    // }, [ currentContract, getAllCampaigns]);
-  
 
   const formatDeadline = (deadlineDate: Date) => {
     const now = new Date();
@@ -105,19 +78,7 @@ const CampaignDetail = () => {
   };
 
   const getProgressPercentage = (donated: string, target: string) => {
-    return ((parseFloat(donated) / parseFloat(target)) * 100);
-  };
-
-  const getTagColor = (tag?: string) => {
-    const colors: Record<string, string> = {
-      Technology: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-      Environment: "bg-green-500/20 text-green-400 border-green-500/30",
-      Education: "bg-purple-500/20 text-purple-400 border-purple-500/30",
-      Health: "bg-red-500/20 text-red-400 border-red-500/30",
-      "Arts & Culture": "bg-pink-500/20 text-pink-400 border-pink-500/30",
-      "Startups / Business": "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-    };
-    return colors[tag || ""] || "bg-gray-500/20 text-gray-400 border-gray-500/30";
+    return Math.min(((parseFloat(donated) / parseFloat(target)) * 100), 100);
   };
 
   const handleDonate = async () => {
@@ -126,24 +87,25 @@ const CampaignDetail = () => {
       return;
     }
     if (!currentCampaign || !donationAmount) return;
-      setIsLoading(true);
+    setIsLoading(true);
     try {
       await donate(Number(currentCampaign.id), donationAmount);
       toast.success(`Donation of ${donationAmount} ETH made successfully!`);
       setDonationAmount("");
       getAllCampaigns();
-      //eslint-disable-next-line
-    } catch (error : any) {
-      toast.error("Donation failed. Please try again:.",error.message);
+    } catch (error: any) {
+      toast.error(error.message || "Donation failed.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   if (isfetching) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-white text-lg font-inter">Loading campaign...</p>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+          <p className="text-muted-foreground font-medium">Loading project...</p>
         </div>
       </div>
     );
@@ -151,15 +113,13 @@ const CampaignDetail = () => {
 
   if (!currentCampaign) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-        <Card className="bg-slate-800/50 backdrop-blur-sm border-slate-700">
-          <CardContent className="p-8 text-center">
-            <h2 className="text-xl font-semibold text-white mb-4">Campaign Not Found</h2>
-            <Button onClick={() => router.push("/campaigns")} className="bg-purple-600 hover:bg-purple-700">
-              Back to Campaigns
-            </Button>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center space-y-4">
+          <h2 className="text-2xl font-bold">Campaign Not Found</h2>
+          <Button onClick={() => router.push("/campaigns")} variant="outline">
+            Back to Campaigns
+          </Button>
+        </div>
       </div>
     );
   }
@@ -168,211 +128,213 @@ const CampaignDetail = () => {
   const isEnded = new Date(currentCampaign.deadlineDate) < new Date();
 
   return (
-   
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 font-inter">
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-1000"></div>
-      </div>
- <motion.div
-     initial={ { opacity: 0, y: 40, scale: 0.98, }}
-          animate={{ opacity: 1, y: 0, scale: 1,  }}
-          transition={{ duration: 0.8, ease: "easeInOut" }}
-          exit={ { opacity: 0, y: -30, scale: 0.95, }}
-    >
-      {/* Header */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-purple-600/10 to-blue-600/10 border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-background text-foreground">
+      {/* Navigation Bar */}
+      <div className="border-b border-border bg-card/30 backdrop-blur-sm sticky top-0 z-40 h-16 flex items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
           <div className="flex items-center justify-between">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => router.push("/campaigns")}
-              className="text-slate-400 hover:text-white hover:bg-purple-500"
+              className="text-muted-foreground hover:text-foreground group -ml-2"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Campaigns
+              <ChevronLeft className="w-4 h-4 mr-1 transition-transform group-hover:-translate-x-1" />
+              All Projects
             </Button>
-            <Button variant="ghost" size="sm" className="text-slate-400 hover:bg-purple-500 hover:text-white">
-              <Share2 className="w-4 h-4 mr-2" />
-              Share Campaign
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" className="h-9">
+                <Share2 className="w-4 h-4 mr-2" />
+                Share
+              </Button>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Campaign Details */}
-          <div className="lg:col-span-2 space-y-8">
-            {/* Campaign Image and Basic Info */}
-            <Card className="bg-slate-800/60 backdrop-blur-sm border-slate-700/50 overflow-hidden rounded-2xl">
-              <div className="relative h-96">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          {/* Main Content */}
+          <div className="lg:col-span-8 space-y-12">
+            <section className="space-y-8">
+              <div className="relative aspect-video rounded-3xl overflow-hidden border border-border shadow-2xl bg-muted">
                 <Image
-                  fill={true}
+                  fill
                   src={currentCampaign.imageUrl}
                   alt={currentCampaign.title}
                   className="object-cover"
+                  priority
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent"></div>
-                <div className="absolute bottom-6 left-6 right-6">
-                  <div className="flex items-center gap-4 mb-4">
-                    {currentCampaign.tag && (
-                      <Badge className={`${getTagColor(currentCampaign.tag)} font-medium border backdrop-blur-sm px-3 py-1`}>
-                        <span className="mr-2">{tagIcons[currentCampaign.tag] || "📁"}</span>
-                        {currentCampaign.tag}
-                      </Badge>
-                    )}
-                  </div>
-                  <h1 className="text-4xl font-bold text-white mb-2 font-playfair">{currentCampaign.title}</h1>
-                  <p className="text-slate-300 text-lg">by {currentCampaign.owner}</p>
+                <div className="absolute top-6 left-6">
+                  <Badge variant="secondary" className="backdrop-blur-md bg-background/90 border-none px-4 py-1.5 font-bold shadow-lg">
+                    {tagIcons[currentCampaign.tag || ""] || "📁"} {currentCampaign.tag}
+                  </Badge>
                 </div>
               </div>
-            </Card>
 
-            {/* Description */}
-            <Card className="bg-slate-800/60 backdrop-blur-sm border-slate-700/50 rounded-2xl">
-              <CardHeader>
-                <CardTitle className="text-white font-playfair text-2xl">About This Campaign</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-slate-300 leading-relaxed text-lg font-inter">
+              <div className="space-y-6">
+                <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight leading-[1.1]">{currentCampaign.title}</h1>
+                <div className="flex flex-wrap items-center gap-4">
+                  <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-2xl border border-border">
+                    <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center border border-primary/20">
+                      <ShieldCheck className="w-5 h-5 text-primary" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Campaign Creator</span>
+                      <span className="font-mono text-sm font-semibold">{currentCampaign.owner.slice(0, 8)}...{currentCampaign.owner.slice(-6)}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-2 text-muted-foreground px-4 py-2 bg-muted/30 rounded-full text-sm font-medium">
+                    <Clock className="w-4 h-4" />
+                    <span>Launched on {new Date().toLocaleDateString()}</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section className="space-y-8">
+              <div className="flex items-center gap-3 border-b border-border pb-6">
+                <h2 className="text-3xl font-bold">About the project</h2>
+              </div>
+              <div className="prose prose-zinc dark:prose-invert max-w-none">
+                <p className="text-xl leading-relaxed text-muted-foreground whitespace-pre-line">
                   {currentCampaign.description || "No description provided for this campaign."}
                 </p>
-                
-                {/* Metadata */}
-                <div className="mt-6 p-4 bg-slate-900/30 rounded-lg">
-                  <p className="text-sm text-slate-400 mb-2">Campaign Metadata (IPFS):</p>
+              </div>
+
+              <Card className="border-border bg-card shadow-sm rounded-3xl overflow-hidden">
+                <CardContent className="p-8 space-y-4">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-primary/10 rounded-xl">
+                      <ExternalLink className="w-6 h-6 text-primary" />
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="font-bold text-lg">Project Metadata</h3>
+                      <p className="text-sm text-muted-foreground">All project information is stored permanently on the decentralized web (IPFS).</p>
+                    </div>
+                  </div>
                   <Link
                     href={currentCampaign.metadata}
                     target="_blank"
-                    className="text-purple-400 hover:text-purple-300 underline break-all font-mono text-sm"
+                    className="block p-4 bg-muted/50 rounded-2xl font-mono text-xs text-primary hover:bg-muted transition-colors break-all"
                   >
                     {currentCampaign.metadata}
                   </Link>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </section>
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Funding Progress */}
-            <Card className="bg-slate-800/60 backdrop-blur-sm border-slate-700/50 rounded-2xl">
-              <CardContent className="p-6 space-y-6">
-                <div className="text-center">
-                  <div className="text-4xl font-bold text-white mb-2 font-playfair">
-                    {currentCampaign.amountCollected} ETH
+          <div className="lg:col-span-4 space-y-8">
+            <Card className="border-border shadow-2xl rounded-[32px] sticky top-24 overflow-hidden bg-card">
+              <CardContent className="p-8 md:p-10 space-y-8">
+                <div className="space-y-4">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-6xl font-black tracking-tighter">{currentCampaign.amountCollected}</span>
+                    <span className="text-2xl font-bold text-muted-foreground">ETH</span>
                   </div>
-                  <div className="text-slate-400 font-inter">
-                    raised of {currentCampaign.target} ETH goal
-                  </div>
-                </div>
-
-                <Progress value={progress} className="h-4 bg-slate-700/50 rounded-full" />
-
-                <div className="grid grid-cols-2 gap-4 text-center">
-                  <div>
-                    <div className="text-2xl font-bold text-white font-playfair">{progress.toFixed(1)}%</div>
-                    <div className="text-slate-400 text-sm font-inter">Funded</div>
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-white font-playfair">{currentCampaign.donators.length}</div>
-                    <div className="text-slate-400 text-sm font-inter">Backers</div>
+                  <div className="space-y-4">
+                    <Progress value={progress} className="h-4 rounded-full" />
+                    <div className="flex justify-between text-sm font-bold uppercase tracking-widest">
+                      <span className="text-muted-foreground">Goal: {currentCampaign.target} ETH</span>
+                      <span className="text-primary">{progress.toFixed(0)}%</span>
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-center gap-2 text-lg">
-                  <Clock className="w-5 h-5 text-slate-400" />
-                  <span className={`font-medium font-inter ${isEnded ? "text-red-400" : "text-emerald-400"}`}>
-                    {formatDeadline(new Date(currentCampaign.deadlineDate))}
-                  </span>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-5 bg-muted/30 rounded-3xl border border-border text-center space-y-1">
+                    <div className="text-3xl font-black">{currentCampaign.donators.length}</div>
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Backers</div>
+                  </div>
+                  <div className="p-5 bg-muted/30 rounded-3xl border border-border text-center space-y-1">
+                    <div className={`text-3xl font-black ${isEnded ? "text-destructive" : "text-emerald-500"}`}>
+                      {formatDeadline(new Date(currentCampaign.deadlineDate)).split(' ')[0]}
+                    </div>
+                    <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Days Left</div>
+                  </div>
                 </div>
 
-                {/* Donate Button */}
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button
-                      className={`w-full py-4 text-lg rounded-xl transition-all duration-300 font-inter font-semibold cursor-pointer ${
-                        isEnded
-                          ? "bg-slate-600 hover:bg-slate-700 text-slate-300"
-                          : "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white transform hover:scale-[1.02] shadow-lg hover:shadow-emerald-500/25"
-                      }`}
+                      size="lg"
+                      className="w-full h-20 text-xl font-black rounded-3xl shadow-xl hover:shadow-primary/20 transition-all active:scale-[0.98]"
                       disabled={isEnded || isLoading}
                     >
-                      {isEnded ? "Campaign Ended" : "Support This Project"}
+                      {isEnded ? "Campaign Ended" : "Back This Project"}
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="bg-slate-800/95 backdrop-blur-sm border-slate-700 text-white rounded-2xl">
-                    <DialogHeader>
-                      <DialogTitle className="font-playfair text-2xl">Support {currentCampaign.title}</DialogTitle>
-                      <DialogDescription className="text-slate-300 font-inter">
-                        Help bring this project to life with your contribution
+                  <DialogContent className="sm:max-w-md border-border bg-card rounded-[32px]">
+                    <DialogHeader className="space-y-4 p-4">
+                      <DialogTitle className="text-3xl font-black tracking-tight">Support project</DialogTitle>
+                      <DialogDescription className="text-base">
+                        Your contribution helps bring this project to life.
                       </DialogDescription>
                     </DialogHeader>
-                    <div className="space-y-6 pt-4">
-                      <div className="space-y-3">
-                        <Label htmlFor="amount" className="text-white font-medium font-inter">
-                          Donation Amount (ETH)
+                    <div className="space-y-8 p-4 pt-0">
+                      <div className="space-y-4">
+                        <Label htmlFor="amount" className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">
+                          Contribution Amount
                         </Label>
-                        <Input
-                          id="amount"
-                          type="number"
-                          step="0.01"
-                          placeholder="0.1"
-                          value={donationAmount}
-                          onChange={(e) => setDonationAmount(e.target.value)}
-                          className="bg-slate-700/50 border-slate-600 text-white font-inter rounded-xl py-3"
-                        />
+                        <div className="relative">
+                          <Input
+                            id="amount"
+                            type="number"
+                            step="0.01"
+                            placeholder="0.1"
+                            value={donationAmount}
+                            onChange={(e) => setDonationAmount(e.target.value)}
+                            className="h-20 text-3xl font-black pl-6 pr-20 rounded-2xl focus:ring-primary/20 border-2"
+                          />
+                          <div className="absolute right-6 top-1/2 -translate-y-1/2 font-black text-muted-foreground text-xl">ETH</div>
+                        </div>
                       </div>
                       <Button
                         onClick={handleDonate}
-                        className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 py-4 text-lg font-semibold rounded-xl transition-all duration-300 font-inter cursor-pointer"
+                        className="w-full h-16 text-xl font-black rounded-2xl"
                         disabled={!donationAmount || isLoading}
                       >
-                        {!isConnected ? (
-                          <>
-                            <Wallet className="w-5 h-5 mr-2" />
-                            Connect & Donate
-                          </>
-                        ) : (
-                          `Donate ${donationAmount || "0"} ETH`
-                        )}
+                        {!isConnected ? "Connect Wallet" : `Pledge ${donationAmount || "0"} ETH`}
                       </Button>
                     </div>
                   </DialogContent>
                 </Dialog>
+
+                <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground justify-center">
+                  <ShieldCheck className="w-4 h-4 text-emerald-500" />
+                  <span>Verified Smart Contract</span>
+                </div>
               </CardContent>
             </Card>
 
-            {/* Donators List */}
-            <Card className="bg-slate-800/60 backdrop-blur-sm border-slate-700/50 rounded-2xl">
-              <CardHeader>
-                <CardTitle className="text-white font-playfair text-xl flex items-center gap-2">
-                  <Users className="w-5 h-5" />
-                  Recent Supporters ({currentCampaign.donators.length})
+            <Card className="border-border shadow-sm rounded-3xl overflow-hidden">
+              <CardHeader className="border-b border-border bg-muted/20 px-8 py-6">
+                <CardTitle className="text-lg font-bold flex items-center gap-2">
+                  <Users className="w-5 h-5 text-primary" />
+                  Recent Backers
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-6">
+              <CardContent className="p-4 px-8">
                 {currentCampaign.donators.length === 0 ? (
-                  <div className="text-center py-8">
-                    <Users className="w-12 h-12 text-slate-500 mx-auto mb-4" />
-                    <p className="text-slate-400 font-inter">No supporters yet. Be the first to support this campaign!</p>
+                  <div className="text-center py-10 space-y-2">
+                    <p className="font-bold text-muted-foreground">No backers yet.</p>
+                    <p className="text-xs text-muted-foreground">Be the first to pledge support!</p>
                   </div>
                 ) : (
-                  <div className="space-y-3 max-h-64 overflow-y-auto custom-scrollbar">
+                  <div className="space-y-4 max-h-[400px] overflow-y-auto custom-scrollbar pr-2 py-4">
                     {currentCampaign.donators.map((donator, index) => (
-                      <div key={index} className="flex items-center gap-3 p-3 bg-slate-700/30 rounded-lg">
-                        <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-                          {donator.slice(2, 4).toUpperCase()}
+                      <div key={index} className="flex items-center gap-4 group">
+                        <div className="w-10 h-10 bg-muted rounded-xl flex items-center justify-center text-xs font-black border border-border group-hover:border-primary/50 transition-colors">
+                          {index + 1}
                         </div>
-                        <div className="flex-1">
-                          <p className="text-white font-mono text-sm">
-                            {donator.slice(0, 6)}...{donator.slice(-4)}
+                        <div className="flex-1 min-w-0">
+                          <p className="font-mono text-[10px] font-bold text-muted-foreground truncate group-hover:text-foreground transition-colors">
+                            {donator}
                           </p>
-                          <p className="text-slate-400 text-xs">Supporter #{index + 1}</p>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-primary/60">Verified Supporter</p>
                         </div>
                       </div>
                     ))}
@@ -383,7 +345,6 @@ const CampaignDetail = () => {
           </div>
         </div>
       </div>
-    </motion.div>
     </div>
   );
 };

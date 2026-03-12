@@ -4,92 +4,74 @@ import { Button } from "@/components/ui/button";
 import { Menu, X, Zap } from "lucide-react";
 import { useContractStore } from "@/stores/contractsStore";
 import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { connectWallet, isConnected,addTestNet,correctChain } = useContractStore();
+  const { connectWallet, isConnected, addTestNet, correctChain } = useContractStore();
   const pathname = usePathname();
   const router = useRouter();
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  const scrollToSection = (sectionId: string) => {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
   const navItems = [
-    { name: "Home", href: "/" },
-    { name: "Features", href: "features" },
-    { name: "Education", href: "education" },
-    { name: "About", href: "footer" },
-    { name: "Contact", href: "mailto:arnavrajcodes@gmail.com" },
+    { name: "Explore", href: "/campaigns" },
+    { name: "Create", href: "/create-campaign" },
+    { name: "About", href: "/#footer" },
   ];
 
   return (
-    <nav className="sticky top-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-sm border-b border-slate-800">
+    <nav className="sticky top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
-              <Zap className="h-5 w-5 text-white" />
+          <Link href="/" className="flex items-center space-x-2 group">
+            <div className="w-8 h-8 bg-primary rounded flex items-center justify-center transition-transform group-hover:scale-105">
+              <Zap className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold text-white">CrowdSpark</span>
-          </div>
+            <span className="text-xl font-bold tracking-tight">CrowdSpark</span>
+          </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-4">
             {navItems.map((item) => (
               <Button
-                variant={"link"}
+                variant="ghost"
                 key={item.name}
-                onClick={() => {
-                  if (item.href == "/") {
-                    if (pathname?.includes("#") || pathname == "/")
-                      scrollToTop();
-                    else {
-                      router.push("/");
-                    }
-                  }
-                  if (item.name == "Contact") router.push(`${item.href}`);
-                  if (pathname?.includes("#") || pathname == "/") {
-                    scrollToSection(`${item.href}`);
-                  }
-                  else if (item.href != "/") {
-                    router.push(`/#${item.href}`);
-                  }
-                }}
-                className="text-slate-300 hover:text-purple-400 transition-colors duration-200 font-medium my-0 mx-2"
+                onClick={() => router.push(item.href)}
+                className="text-muted-foreground hover:text-foreground transition-colors font-medium"
               >
                 {item.name}
               </Button>
             ))}
+            
+            <div className="h-6 w-px bg-border mx-2" />
+            
+            {!correctChain && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-xs font-semibold"
+                onClick={addTestNet}
+              >
+                Switch Network
+              </Button>
+            )}
+            
             <Button
               size="sm"
-              className={`${
-                isConnected
-                  ? "bg-gradient-to-r from-green-700 to-green-800 hover-from-green-800 hover-to-green-900 "
-                  : "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold"
+              variant={isConnected ? "outline" : "default"}
+              className={`font-semibold ${
+                isConnected 
+                  ? "border-emerald-500/50 text-emerald-500 hover:bg-emerald-500/10 hover:text-emerald-500" 
+                  : ""
               }`}
               onClick={connectWallet}
-              disabled={!correctChain|| isConnected}
+              disabled={!correctChain || isConnected}
             >
               {isConnected ? "Connected" : "Connect Wallet"}
-            </Button>
-            <Button
-              size="sm"
-              className={`${correctChain?"hidden":""} bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold`}
-              onClick={addTestNet}
-            >
-              Add TestNet to Metamask
             </Button>
           </div>
 
@@ -99,7 +81,7 @@ const Navbar = () => {
               variant="ghost"
               size="icon"
               onClick={toggleMenu}
-              className="text-slate-300 hover:text-white hover:bg-slate-800"
+              className="text-muted-foreground"
             >
               {isMenuOpen ? (
                 <X className="h-6 w-6" />
@@ -112,22 +94,29 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 bg-slate-900/95 backdrop-blur-sm border-t border-slate-800">
+          <div className="md:hidden border-t border-border bg-background animate-in slide-in-from-top-2">
+            <div className="px-2 pt-2 pb-3 space-y-1">
               {navItems.map((item) => (
-                <a
+                <Button
                   key={item.name}
-                  href={item.href}
-                  className="block px-3 py-2 text-slate-300 hover:text-purple-400 hover:bg-slate-800 rounded-md transition-colors duration-200"
-                  onClick={() => setIsMenuOpen(false)}
+                  variant="ghost"
+                  className="w-full justify-start text-muted-foreground"
+                  onClick={() => {
+                    router.push(item.href);
+                    setIsMenuOpen(false);
+                  }}
                 >
                   {item.name}
-                </a>
+                </Button>
               ))}
-              <div className="px-3 py-2">
+              <div className="pt-2">
                 <Button
                   size="sm"
-                  className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold"
+                  className="w-full font-semibold"
+                  onClick={() => {
+                    connectWallet();
+                    setIsMenuOpen(false);
+                  }}
                 >
                   Connect Wallet
                 </Button>
@@ -141,3 +130,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

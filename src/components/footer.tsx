@@ -1,102 +1,82 @@
 "use client";
-import { Zap, Twitter, Github, Instagram , Mail } from "lucide-react";
+import { Zap, Github, Mail, ShieldCheck, Globe } from "lucide-react";
 import Link from "next/link";
 
 const Footer = () => {
-  const socialLinks = [
-    { icon: Twitter, href: "https://x.com/ArnavRaj529053", label: "Twitter" },
-    { icon: Github, href: "https://github.com/arnavraj-7/", label: "GitHub" },
-    { icon: Instagram, href: "https://www.instagram.com/excuzemearnav/", label: "Discord" },
-    { icon: Mail, href: "mailto:arnavrajcodes@gmail.com", label: "Email" },
-  ];
-
-  const footerLinks = {
-    Product: ["Features", "Pricing", "Documentation", "Roadmap"],
-    Resources: ["Blog", "Community", "Support", "Status"],
-    Company: ["About", "Careers", "Privacy", "Terms"],
-    Developers: ["API", "SDK", "Tools", "Examples"],
-  };
+  const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative bg-slate-900 border-t border-slate-800" id="footer">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
-          {/* Logo and Motto */}
-          <div className="lg:col-span-2">
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
-                <Zap className="h-5 w-5 text-white" />
+    <footer id="footer" className="bg-card border-t border-border mt-20 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 text-left">
+          {/* Brand & Project Info */}
+          <div className="md:col-span-2 space-y-6">
+            <Link href="/" className="flex items-center space-x-2 group w-fit">
+              <div className="w-8 h-8 bg-primary rounded flex items-center justify-center transition-transform group-hover:scale-105">
+                <Zap className="h-5 w-5 text-primary-foreground" />
               </div>
-              <span className="text-xl font-bold text-white">CrowdSpark</span>
-            </div>
-            <p className="text-purple-400 font-semibold mb-2">
-              &quot;Igniting Innovation, One Campaign at a Time&quot;
+              <span className="text-xl font-bold tracking-tight">CrowdSpark</span>
+            </Link>
+            <p className="text-muted-foreground text-sm max-w-sm leading-relaxed">
+              A decentralized crowdfunding prototype built to demonstrate the power of 
+              Ethereum smart contracts and transparent fundraising. This is a personal 
+              portfolio project and not a public financial platform.
             </p>
-            <p className="text-slate-400 text-sm leading-relaxed mb-6">
-              Empowering creators worldwide with blockchain-powered crowdfunding. 
-              Transparent, secure, and decentralized funding for the future.
-            </p>
-            
-            {/* Social Links */}
-            <div className="flex space-x-4">
-              {socialLinks.map((social) => (
-                <Link
-                  key={social.label}
-                  href={social.href}
-                  target="_blank"
-                  className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center text-slate-400 hover:text-purple-400 hover:bg-slate-700 transition-all duration-200"
-                  aria-label={social.label}
-                >
-                  <social.icon className="h-5 w-5" />
-                </Link>
-              ))}
+            <div className="flex items-center space-x-4">
+              <Link href="https://github.com/arnavraj-7/" target="_blank" className="text-muted-foreground hover:text-foreground transition-colors p-2 bg-muted rounded-lg">
+                <Github className="w-5 h-5" />
+              </Link>
+              <Link href="mailto:arnavrajcodes@gmail.com" className="text-muted-foreground hover:text-foreground transition-colors p-2 bg-muted rounded-lg">
+                <Mail className="w-5 h-5" />
+              </Link>
             </div>
           </div>
 
-          {/* Footer Links */}
-          {Object.entries(footerLinks).map(([category, links]) => (
-            <div key={category}>
-              <h3 className="text-white font-semibold mb-4">{category}</h3>
-              <ul className="space-y-2">
-                {links.map((link) => (
-                  <li key={link}>
-                    <Link
-                      href={"#"}
-                      className="text-slate-400 hover:text-purple-400 transition-colors duration-200 text-sm"
-                    >
-                      {link}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          {/* Navigation */}
+          <div>
+            <h4 className="font-bold text-xs uppercase tracking-widest mb-6 text-muted-foreground">Platform</h4>
+            <ul className="space-y-4">
+              <li>
+                <Link href="/campaigns" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Browse Campaigns</Link>
+              </li>
+              <li>
+                <Link href="/create-campaign" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">Launch Project</Link>
+              </li>
+              <li>
+                <Link href="/#features" className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors">How it Works</Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Project Details */}
+          <div>
+            <h4 className="font-bold text-xs uppercase tracking-widest mb-6 text-muted-foreground">Technical Specs</h4>
+            <ul className="space-y-4">
+              <li className="flex items-center text-sm font-medium text-muted-foreground">
+                <Globe className="w-4 h-4 mr-2 text-primary/60" />
+                Sepolia Testnet
+              </li>
+              <li className="flex items-center text-sm font-medium text-muted-foreground">
+                <ShieldCheck className="w-4 h-4 mr-2 text-emerald-500" />
+                Verified Contracts
+              </li>
+              <li className="flex items-center text-sm font-medium text-muted-foreground">
+                <div className="w-4 h-4 mr-2 flex items-center justify-center">
+                  <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                </div>
+                On-chain Logic
+              </li>
+            </ul>
+          </div>
         </div>
 
         {/* Bottom Bar */}
-        <div className="mt-12 pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-slate-400 text-sm">
-            © 2025 CrowdSpark. Built with ❤️ on Ethereum and nextjs.
+        <div className="border-t border-border mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+            © {currentYear} CrowdSpark • Portfolio Prototype by Arnav Raj
           </p>
-          <div className="flex items-center space-x-6 mt-4 md:mt-0">
-            <Link
-              href="https://github.com/arnavraj-7/Crowd-Spark"
-              className="flex items-center space-x-2 px-4 py-2 rounded-lg border border-slate-700 bg-slate-800 text-slate-400 hover:text-purple-400 hover:border-purple-400 transition-all duration-200"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Github className="h-4 w-4" />
-              <span className="text-sm">View on GitHub</span>
-            </Link>
-            <Link href="#" className="text-slate-400 hover:text-purple-400 text-sm transition-colors duration-200">
-              Privacy Policy
-            </Link>
-            <Link href="#" className="text-slate-400 hover:text-purple-400 text-sm transition-colors duration-200">
-              Terms of Service
-            </Link>
-            <Link href="#" className="text-slate-400 hover:text-purple-400 text-sm transition-colors duration-200">
-              Cookies
-            </Link>
+          <div className="flex items-center gap-2 px-3 py-1 bg-muted rounded-full border border-border">
+            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-tight">Personal Project / No Commercial Use</span>
           </div>
         </div>
       </div>

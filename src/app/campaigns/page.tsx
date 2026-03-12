@@ -13,13 +13,14 @@ import {
   TrendingUp,
   Users,
   Wallet,
+  ChevronRight,
 } from "lucide-react";
 import { useContractStore } from "@/stores/contractsStore";
 import type { ProcessedCampaign } from "@/types/index.ts";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import {motion} from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion";
 
 const tagIcons: Record<string, string> = {
   Technology: "💻",
@@ -37,33 +38,20 @@ const tagIcons: Record<string, string> = {
 const Campaigns = () => {
   const router = useRouter();
   const [tag, setTag] = useState<string>("All");
-  const {isLoading,
-    connectWallet,
-    getAllCampaigns,
-    isConnected,
-    allCampaigns,
-    isfetching,
-    sortedCampaigns,
-  } = useContractStore();
+  const { isLoading, connectWallet, getAllCampaigns, isConnected, allCampaigns, isfetching, sortedCampaigns } = useContractStore();
   const [taggedCampaigns, setTaggedCampaigns] = useState<ProcessedCampaign[]>([]);
-
-
-
 
   useEffect(() => {
     const fetchCampaigns = async () => {
       if (!isConnected) return;
       try {
         await getAllCampaigns();
-        console.log("allCampaigns", allCampaigns);
-        if (allCampaigns) {
-        }
       } catch (error) {
         console.error("Error fetching campaigns:", error);
       }
     };
     fetchCampaigns();
-  }, [isConnected, getAllCampaigns,]);
+  }, [isConnected, getAllCampaigns]);
 
   const formatDeadline = (deadlineDate: Date) => {
     const now = new Date();
@@ -76,293 +64,201 @@ const Campaigns = () => {
   };
 
   const getProgressPercentage = (donated: string, target: string) => {
-    return (parseFloat(donated) / parseFloat(target)) * 100;
-  };
-
-  // useEffect(() => {
-  //   console.log("called useEffect");
-  //   console.log("taggedCampaigns", taggedCampaigns);
-  // }, [taggedCampaigns]);
-
-  const gettagColor = (tag?: string) => {
-    const colors: Record<string, string> = {
-      Technology: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-      Environment: "bg-green-500/20 text-green-400 border-green-500/30",
-      Education: "bg-purple-500/20 text-purple-400 border-purple-500/30",
-      Health: "bg-red-500/20 text-red-400 border-red-500/30",
-      "Arts & Culture": "bg-pink-500/20 text-pink-400 border-pink-500/30",
-      "Startups / Business":
-        "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-    };
-    return (
-      colors[tag || ""] || "bg-gray-500/20 text-gray-400 border-gray-500/30"
-    );
+    return Math.min((parseFloat(donated) / parseFloat(target)) * 100, 100);
   };
 
   if (isfetching) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-white text-lg font-inter">Loading campaigns...</p>
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-10 h-10 border-2 border-primary/20 border-t-primary rounded-full animate-spin"></div>
+          <p className="text-muted-foreground font-medium">Loading campaigns...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 font-inter">
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-1000"></div>
-      </div>
-      
-      {!isConnected &&(
-                <Card className="bg-slate-800/50 backdrop-blur-sm border-slate-700 max-w-md mx-auto">
-                  <CardHeader className="text-center">
-                    <div className="w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Wallet className="w-8 h-8 text-white" />
-                    </div>
-                    <CardTitle className="text-white text-2xl">Connect Your Wallet</CardTitle>
-                    <CardDescription className="text-slate-300">
-                      Connect your Web3 wallet to start creating campaigns
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <Button
-                      onClick={connectWallet}
-                      disabled={isLoading}
-                      className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-6 text-lg rounded-xl"
-                    >
-                      {isLoading ? 'Connecting...' : 'Connect Wallet'}
-                    </Button>
-                  </CardContent>
-                </Card>
-                )}
-
-      {/* Header */}
-      <motion.div
-      
-       initial={ { opacity: 0, y: 40, scale: 0.98, }}
-          animate={{ opacity: 1, y: 0, scale: 1,  }}
-          transition={{ duration: 0.8, ease: ["easeInOut"] }}
-          exit={ { opacity: 0, y: -30, scale: 0.95, }}
-          
-      >
-
-     
-      <div className="relative overflow-hidden bg-gradient-to-r from-purple-600/10 to-blue-600/10 border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="flex items-center justify-between mb-6">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => router.push("/")}
-              className="text-slate-400 hover:text-white hover:bg-transparent cursor-pointer hover:underline"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Home
-            </Button>
-
-            <Button
-              onClick={() => router.push("/create-campaign")}
-              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Create Campaign
-            </Button>
+    <div className="min-h-screen bg-background text-foreground selection:bg-primary/10">
+      {/* Header Section */}
+      <div className="border-b border-border bg-card/30 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-primary font-semibold text-sm tracking-wider uppercase">
+                <TrendingUp className="w-4 h-4" />
+                Live Crowdfunding
+              </div>
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight">Active Campaigns</h1>
+              <p className="text-muted-foreground text-lg max-w-xl">
+                Support innovative projects and help creators bring their ideas to life.
+              </p>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                onClick={() => router.push("/")}
+                className="hidden sm:flex"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Home
+              </Button>
+              <Button
+                onClick={() => router.push("/create-campaign")}
+                className="shadow-sm font-semibold"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Launch Campaign
+              </Button>
+            </div>
           </div>
 
-          <div className="text-center space-y-6">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text font-playfair">
-              Active Campaigns
-            </h1>
-            <p className="text-lg text-slate-300 mb-6 max-w-2xl mx-auto font-inter">
-              Discover innovative projects and help bring them to life
-            </p>
-
-            {/* Stats Section */}
-            <div className="flex justify-center items-center gap-8 mb-6">
-              <div className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-xl px-6 py-4">
-                <div className="flex items-center gap-3">
-                  <TrendingUp className="w-5 h-5 text-emerald-400" />
-                  <div className="text-left">
-                    <p className="text-2xl font-bold text-white font-playfair">
-                      {allCampaigns?.length || 0}
-                    </p>
-                    <p className="text-sm text-slate-400 font-inter">Active Campaigns</p>
-                  </div>
-                </div>
+          {/* Stats & Filters */}
+          <div className="mt-12 flex flex-col md:flex-row items-center gap-6 justify-between border-t border-border pt-8">
+            <div className="flex items-center gap-8">
+              <div className="flex flex-col">
+                <span className="text-2xl font-bold">{allCampaigns?.length || 0}</span>
+                <span className="text-xs text-muted-foreground uppercase font-semibold tracking-widest">Total Projects</span>
               </div>
-              
-              <div className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-xl px-6 py-4">
-                <div className="flex items-center gap-3">
-                  <Users className="w-5 h-5 text-purple-400" />
-                  <div className="text-left">
-                    <p className="text-2xl font-bold text-white font-playfair">
-                      {tag === "All" ? allCampaigns?.length || 0 : taggedCampaigns?.length || 0}
-                    </p>
-                    <p className="text-sm text-slate-400 font-inter">
-                      {tag === "All" ? "Total Projects" : `${tag} Projects`}
-                    </p>
-                  </div>
-                </div>
+              <div className="w-px h-8 bg-border" />
+              <div className="flex flex-col">
+                <span className="text-2xl font-bold text-emerald-500">
+                  {tag === "All" ? allCampaigns?.length || 0 : taggedCampaigns?.length || 0}
+                </span>
+                <span className="text-xs text-muted-foreground uppercase font-semibold tracking-widest">
+                  {tag === "All" ? "All Categories" : `${tag}`}
+                </span>
               </div>
             </div>
 
-            {/* Category Filter */}
-            <div className="flex justify-center">
-              <div className="bg-slate-800/40 backdrop-blur-sm border border-slate-700/50 rounded-xl p-2">
-                <select 
-                  className="bg-transparent text-white font-inter text-sm px-4 py-2 rounded-lg border-none outline-none focus:ring-2 focus:ring-purple-500/50 cursor-pointer min-w-[200px]" 
-                  name="tag" 
-                  defaultValue={"All"} 
-                  onChange={(e) => {
-                    console.log(e.target.value, sortedCampaigns[e.target.value]);
-                    setTaggedCampaigns(sortedCampaigns[e.target.value]);
-                    setTag(e.target.value);
-                  }}
-                >
-                  <option value="All" className="bg-slate-800 text-white">🌟 All Categories</option>
-                  {Object.keys(tagIcons).map((tag) => (
-                    <option key={tag} value={tag} className="bg-slate-800 text-white">
-                      {tagIcons[tag]} {tag}
-                    </option>
-                  ))}
-                </select>
+            <div className="relative w-full md:w-64">
+              <select 
+                className="w-full bg-card border border-border rounded-lg px-4 py-2 text-sm font-medium focus:ring-2 focus:ring-primary/20 outline-none appearance-none cursor-pointer"
+                name="tag" 
+                defaultValue={"All"} 
+                onChange={(e) => {
+                  setTaggedCampaigns(sortedCampaigns[e.target.value] || []);
+                  setTag(e.target.value);
+                }}
+              >
+                <option value="All">🌟 All Categories</option>
+                {Object.keys(tagIcons).map((tagName) => (
+                  <option key={tagName} value={tagName}>
+                    {tagIcons[tagName]} {tagName}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground">
+                <ChevronRight className="w-4 h-4 rotate-90" />
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Campaigns Grid */}
+      {/* Grid Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        {allCampaigns?.length === 0 ? (
-          <Card className="bg-slate-800/50 backdrop-blur-sm border-slate-700 max-w-md mx-auto">
-            <CardContent className="p-12 text-center">
-              <Target className="w-16 h-16 text-slate-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-white mb-2 font-playfair">
-                No Campaigns Yet
-              </h3>
-              <p className="text-slate-400 mb-6">
-                Be the first to create a campaign and start raising funds!
-              </p>
-              <Button
-                onClick={() => router.push("/create-campaign")}
-                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
-              >
-                Create Campaign
-              </Button>
-            </CardContent>
-          </Card>
-        ) : tag !== "All" && (!taggedCampaigns || taggedCampaigns.length === 0) ? (
-          <Card className="bg-slate-800/50 backdrop-blur-sm border-slate-700 max-w-md mx-auto">
-            <CardContent className="p-12 text-center">
-              <div className="text-6xl mb-4">{tagIcons[tag] || "📁"}</div>
-              <h3 className="text-xl font-semibold text-white mb-2 font-playfair">
-                No {tag} Campaigns
-              </h3>
-              <p className="text-slate-400 mb-6">
-                There are currently no campaigns in the {tag} category. Be the first to create one!
-              </p>
-              <Button
-                onClick={() => router.push("/create-campaign")}
-                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
-              >
-                Create {tag} Campaign
-              </Button>
-            </CardContent>
-          </Card>
+        {!isConnected ? (
+          <div className="max-w-md mx-auto text-center py-20">
+            <div className="w-20 h-20 bg-muted rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <Wallet className="w-10 h-10 text-muted-foreground" />
+            </div>
+            <h2 className="text-2xl font-bold mb-2">Connect your wallet</h2>
+            <p className="text-muted-foreground mb-8">Please connect your Web3 wallet to browse and support campaigns.</p>
+            <Button onClick={connectWallet} className="w-full py-6 text-lg rounded-xl">
+              Connect Wallet
+            </Button>
+          </div>
+        ) : allCampaigns?.length === 0 ? (
+          <div className="text-center py-24 border-2 border-dashed border-border rounded-3xl">
+            <Target className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-xl font-bold mb-2">No campaigns found</h3>
+            <p className="text-muted-foreground mb-8">Be the first to launch a campaign on CrowdSpark!</p>
+            <Button onClick={() => router.push("/create-campaign")}>
+              Create First Campaign
+            </Button>
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {(tag === "All" ? allCampaigns : taggedCampaigns)?.map((campaign: ProcessedCampaign, index) => {
-              const progress = getProgressPercentage(
-                campaign.amountCollected,
-                campaign.target
-              );
-              const isEnded = new Date(campaign.deadlineDate) < new Date();
+            <AnimatePresence mode="popLayout">
+              {(tag === "All" ? allCampaigns : taggedCampaigns)?.map((campaign: ProcessedCampaign, index) => {
+                const progress = getProgressPercentage(campaign.amountCollected, campaign.target);
+                const isEnded = new Date(campaign.deadlineDate) < new Date();
 
-              return (
-                <Card
-                  key={index}
-                  className="bg-slate-800/60 backdrop-blur-sm border-slate-700/50 hover:border-slate-600/70 transition-all duration-500 transform hover:scale-[1.03] hover:shadow-2xl hover:shadow-purple-500/10 group overflow-hidden rounded-2xl"
-                >
-                  {/* Campaign Image Section */}
-                  <div className="relative h-64 overflow-hidden rounded-t-2xl group-hover:scale-110 transition-transform duration-500">
-                    <Image
-                      src={campaign.imageUrl}
-                      alt={campaign.title}
-                      fill
-                      className="object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-transparent to-transparent"></div>
-                    <div className="absolute top-4 left-4">
-                      {campaign.tag && (
-                        <Badge
-                          className={`${gettagColor(
-                            campaign.tag
-                          )} font-medium border backdrop-blur-sm px-3 py-1`}
-                        >
-                          <span className="mr-2">{tagIcons[campaign.tag] || "📁"}</span>
-                          {campaign.tag}
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
+                return (
+                  <motion.div
+                    layout
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                    key={campaign.id}
+                  >
+                    <Card className="group overflow-hidden border border-border bg-card hover:border-primary/50 hover:shadow-xl transition-all duration-300 rounded-2xl flex flex-col h-full">
+                      {/* Image */}
+                      <div className="relative aspect-video overflow-hidden">
+                        <Image
+                          src={campaign.imageUrl}
+                          alt={campaign.title}
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                        <div className="absolute top-4 left-4">
+                          <Badge variant="secondary" className="backdrop-blur-md bg-background/80 border-none px-3 py-1 font-semibold text-xs">
+                            {tagIcons[campaign.tag || ""] || "📁"} {campaign.tag}
+                          </Badge>
+                        </div>
+                      </div>
 
-                  <CardContent className="p-6 space-y-5">
-                    {/* Description */}
-                    <h3 className="text-xl font-semibold text-white font-playfair line-clamp-1">
-                      {campaign.title}
-                    </h3>
-                    <p className="text-slate-400 text-sm line-clamp-2">
-                      {campaign.description}
-                    </p>
+                      <CardContent className="p-6 flex flex-col flex-1">
+                        <div className="flex-1 space-y-4">
+                          <div className="space-y-2">
+                            <h3 className="text-xl font-bold leading-tight line-clamp-1 group-hover:text-primary transition-colors">
+                              {campaign.title}
+                            </h3>
+                            <p className="text-muted-foreground text-sm line-clamp-2 leading-relaxed">
+                              {campaign.description}
+                            </p>
+                          </div>
 
-                    {/* Progress Bar */}
-                    <Progress value={progress} className="h-3 rounded-full bg-slate-700/50" />
-                    <div className="flex items-center justify-between text-xs text-slate-400">
-                      <span>{progress.toFixed(1)}% Funded</span>
-                      <span>{campaign.amountCollected} ETH</span>
-                    </div>
+                          <div className="space-y-3">
+                            <div className="flex justify-between items-end text-sm">
+                              <span className="font-bold text-lg">{campaign.amountCollected} ETH</span>
+                              <span className="text-muted-foreground font-medium">raised of {campaign.target} ETH</span>
+                            </div>
+                            <Progress value={progress} className="h-2" />
+                            <div className="flex justify-between items-center text-xs font-semibold uppercase tracking-wider">
+                              <span className={progress >= 100 ? "text-emerald-500" : "text-primary"}>
+                                {progress.toFixed(0)}% Funded
+                              </span>
+                              <div className="flex items-center gap-1.5 text-muted-foreground">
+                                <Clock className="w-3.5 h-3.5" />
+                                <span className={isEnded ? "text-destructive" : ""}>
+                                  {formatDeadline(new Date(campaign.deadlineDate))}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
 
-                    {/* Timeline */}
-                    <div className="flex items-center gap-2 text-sm">
-                      <Clock className="w-4 h-4 text-slate-400" />
-                      <span className={`font-medium ${isEnded ? "text-red-400" : "text-emerald-400"}`}>
-                        {formatDeadline(new Date(campaign.deadlineDate))}
-                      </span>
-                    </div>
-
-                    {/* Metadata */}
-                    <div className="flex items-center justify-between text-xs text-slate-500">
-                      <span>
-                        <Target className="w-4 h-4 inline-block mr-1 align-middle" />
-                        {campaign.target} ETH Goal
-                      </span>
-                    </div>
-
-                    {/* Action Button */}
-                    <div className="pt-2">
-                      <Link href={`/campaigns/${campaign.id}`}>
-                        <Button
-                          className="w-full py-4 text-lg rounded-xl transition-all duration-300 font-inter font-semibold bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white transform hover:scale-[1.02] shadow-lg hover:shadow-purple-500/25 cursor-pointer"
-                        >
-                          <Info className="w-5 h-5 mr-2" />
-                          View Campaign Details
-                        </Button>
-                      </Link>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+                        <div className="pt-6 mt-6 border-t border-border">
+                          <Link href={`/campaigns/${campaign.id}`} className="block">
+                            <Button className="w-full group/btn" variant="secondary">
+                              View Project
+                              <ChevronRight className="w-4 h-4 ml-2 transition-transform group-hover/btn:translate-x-1" />
+                            </Button>
+                          </Link>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
           </div>
         )}
       </div>
-    </motion.div>
     </div>
   );
 };

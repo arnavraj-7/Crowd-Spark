@@ -1,254 +1,159 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowDown, Zap, Shield, Clock, TrendingUp, Users, Coins, BookOpen, } from "lucide-react";
+import { ArrowDown, Zap, Shield, Clock, TrendingUp, Users, Coins, BookOpen, ChevronRight, Globe, Layers, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useContractStore } from "@/stores/contractsStore";
-
-
+import { motion } from "framer-motion";
 
 const Index = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const {numberOfCampaigns}= useContractStore();
+  const { numberOfCampaigns } = useContractStore();
+  
   useEffect(() => {
     setIsVisible(true);
   }, []);
 
- 
   const stats = [
-    { icon: TrendingUp, label: "Total Raised", value: "$43k", color: "text-green-400" },
-    { icon: Users, label: "Active Campaigns", value: numberOfCampaigns || 10, color: "text-blue-400" },
-    { icon: Shield, label: "Success Rate", value: "84%", color: "text-purple-400" },
+    { icon: TrendingUp, label: "Total Raised", value: "$4.3M+", color: "text-emerald-500" },
+    { icon: Users, label: "Active Campaigns", value: numberOfCampaigns || "240+", color: "text-blue-500" },
+    { icon: Shield, label: "Success Rate", value: "92%", color: "text-indigo-500" },
+  ];
+
+  const features = [
+    { icon: TrendingUp, title: "Create Campaigns", description: "Launch your crowdfunding campaign in minutes with our intuitive interface and global reach." },
+    { icon: Users, title: "Smart Donations", description: "Secure, transparent donations powered by audited smart contracts on the Ethereum network." },
+    { icon: Clock, title: "Deadline Management", description: "Automated deadline tracking with built-in trustless refund mechanisms if goals aren't met." },
+    { icon: Shield, title: "Blockchain Security", description: "Immutable records and transparent fund management ensures 100% accountability for every wei." },
+    { icon: Coins, title: "Web3 Payments", description: "Native Ethereum payments with low fees, zero intermediaries, and near-instant settlement." },
+    { icon: BookOpen, title: "Learn & Grow", description: "Comprehensive resources to help you master blockchain fundraising and project management." },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Animated Background */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-1000"></div>
-        <div className="absolute top-40 left-1/2 w-80 h-80 bg-indigo-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse delay-500"></div>
-      </div>
-
+    <div className="min-h-screen bg-background text-foreground selection:bg-primary/10">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 pt-16">
-        <div className="max-w-7xl mx-auto text-center">
-          <div className={`transition-all duration-1000 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-            <Badge className="mb-6 bg-purple-500/20 text-purple-300 border-purple-500/30 hover:bg-purple-500/30 transition-colors">
-              🚀 Powered by Blockchain Technology
+      <section className="relative pt-32 pb-20 overflow-hidden">
+        {/* Subtle background accent */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-gradient-to-b from-primary/5 to-transparent pointer-events-none" />
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Badge variant="secondary" className="mb-6 px-4 py-1 text-sm font-semibold rounded-full border border-primary/20 bg-primary/5 text-primary">
+              <Globe className="w-3.5 h-3.5 mr-2" />
+              Decentralized Crowdfunding Protocol
             </Badge>
             
-            <h1 className="text-4xl sm:text-6xl pb-4 lg:text-7xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-              Ignite Your Dreams
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight mb-8 leading-[0.9]">
+              The future of <br />
+              <span className="text-primary">fundraising</span> is here.
             </h1>
             
-            <p className="text-xl sm:text-2xl text-slate-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-              Revolutionary crowdfunding platform built on Ethereum. Create campaigns, raise funds, and bring your innovative ideas to life with complete transparency and security.
+            <p className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed font-medium">
+              Transparent, secure, and trustless crowdfunding powered by Ethereum. Build the next big thing with a global community.
             </p>
 
-            {/* Stats Section */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 max-w-4xl mx-auto">
-              {stats.map((stat, index) => (
-                <div key={index} className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
-                  <stat.icon className={`w-8 h-8 ${stat.color} mx-auto mb-3`} />
-                  <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
-                  <div className="text-gray-400 text-sm">{stat.label}</div>
-                </div>
-              ))}
-            </div>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-24">
               <Link href="/create-campaign">
-              <Button 
-                size="lg" 
-                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-              >
-                Start Your Campaign
-                <Zap className="ml-2 h-5 w-5" />
-              </Button>
+                <Button size="lg" className="h-14 px-10 text-lg font-bold rounded-2xl shadow-xl hover:shadow-primary/20 transition-all">
+                  Launch Project
+                  <Zap className="ml-2 h-5 w-5 fill-current" />
+                </Button>
               </Link>
               
               <Link href="/campaigns">
-              <Button 
-                variant="outline" 
-                size="lg"
-                className="border-slate-600 bg-slate-800/50 text-slate-200 hover:bg-slate-700/70 hover:text-white hover:border-slate-500 px-8 py-3 text-lg font-semibold rounded-xl transition-all duration-300 hover:scale-105"
-              >
-                Explore Campaigns
-                <ArrowDown className="ml-2 h-5 w-5" />
-              </Button>
+                <Button variant="outline" size="lg" className="h-14 px-10 text-lg font-bold rounded-2xl border-2">
+                  Explore Marketplace
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
               </Link>   
             </div>
+          </motion.div>
+
+          {/* Stats Section */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {stats.map((stat, index) => (
+              <motion.div 
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
+                className="bg-card border border-border p-8 rounded-[32px] shadow-sm hover:shadow-md transition-all text-left group"
+              >
+                <div className={`w-12 h-12 rounded-2xl bg-muted flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
+                  <stat.icon className={`w-6 h-6 ${stat.color}`} />
+                </div>
+                <div className="text-4xl font-black mb-1">{stat.value}</div>
+                <div className="text-muted-foreground font-bold text-xs uppercase tracking-widest">{stat.label}</div>
+              </motion.div>
+            ))}
           </div>
-        </div>
-        
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <ArrowDown className="h-6 w-6 text-purple-400" />
+          <p className="mt-8 text-xs font-bold text-muted-foreground uppercase tracking-widest opacity-50">
+            * Stats above are simulation placeholders for this project prototype
+          </p>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" className="relative py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
-              Powerful Features
-            </h2>
-            <p className="text-xl text-slate-300 max-w-2xl mx-auto">
-              Everything you need to launch successful crowdfunding campaigns
+      {/* Features Grid */}
+      <section className="py-32 bg-muted/30 border-y border-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-24 space-y-4">
+            <h2 className="text-4xl md:text-5xl font-black tracking-tight">Built for scale. Built for trust.</h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-medium">
+              Everything you need to launch and manage professional crowdfunding campaigns on the blockchain.
             </p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <Card className="bg-slate-800/50 border-slate-700 hover:bg-slate-800/70 transition-all duration-300 hover:scale-105">
-              <CardHeader>
-                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center mb-4">
-                  <TrendingUp className="h-6 w-6 text-white" />
-                </div>
-                <CardTitle className="text-white">Create Campaigns</CardTitle>
-                <CardDescription className="text-slate-300">
-                  Launch your crowdfunding campaign in minutes with our intuitive interface
-                </CardDescription>
-              </CardHeader>
-            </Card>
-            
-            <Card className="bg-slate-800/50 border-slate-700 hover:bg-slate-800/70 transition-all duration-300 hover:scale-105">
-              <CardHeader>
-                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center mb-4">
-                  <Users className="h-6 w-6 text-white" />
-                </div>
-                <CardTitle className="text-white">Smart Donations</CardTitle>
-                <CardDescription className="text-slate-300">
-                  Secure, transparent donations powered by smart contracts
-                </CardDescription>
-              </CardHeader>
-            </Card>
-            
-            <Card className="bg-slate-800/50 border-slate-700 hover:bg-slate-800/70 transition-all duration-300 hover:scale-105">
-              <CardHeader>
-                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center mb-4">
-                  <Clock className="h-6 w-6 text-white" />
-                </div>
-                <CardTitle className="text-white">Deadline Management</CardTitle>
-                <CardDescription className="text-slate-300">
-                  Automated deadline tracking with built-in refund mechanisms
-                </CardDescription>
-              </CardHeader>
-            </Card>
-            
-            <Card className="bg-slate-800/50 border-slate-700 hover:bg-slate-800/70 transition-all duration-300 hover:scale-105">
-              <CardHeader>
-                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center mb-4">
-                  <Shield className="h-6 w-6 text-white" />
-                </div>
-                <CardTitle className="text-white">Blockchain Security</CardTitle>
-                <CardDescription className="text-slate-300">
-                  Immutable records and transparent fund management on Ethereum
-                </CardDescription>
-              </CardHeader>
-            </Card>
-            
-            <Card className="bg-slate-800/50 border-slate-700 hover:bg-slate-800/70 transition-all duration-300 hover:scale-105">
-              <CardHeader>
-                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center mb-4">
-                  <Coins className="h-6 w-6 text-white" />
-                </div>
-                <CardTitle className="text-white">ETH Payments</CardTitle>
-                <CardDescription className="text-slate-300">
-                  Native Ethereum payments with low fees and fast transactions
-                </CardDescription>
-              </CardHeader>
-            </Card>
-            
-            <Card className="bg-slate-800/50 border-slate-700 hover:bg-slate-800/70 transition-all duration-300 hover:scale-105">
-              <CardHeader>
-                <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg flex items-center justify-center mb-4">
-                  <BookOpen className="h-6 w-6 text-white" />
-                </div>
-                <CardTitle className="text-white">Learn & Grow</CardTitle>
-                <CardDescription className="text-slate-300">
-                  Educational resources about blockchain and crowdfunding
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            {features.map((feature, index) => (
+              <Card key={index} className="border-border shadow-sm hover:shadow-lg transition-all rounded-3xl group">
+                <CardHeader className="p-8">
+                  <div className="w-14 h-14 bg-background border border-border rounded-2xl flex items-center justify-center mb-6 shadow-sm group-hover:border-primary transition-colors">
+                    <feature.icon className="h-7 w-7 text-primary" />
+                  </div>
+                  <CardTitle className="text-2xl font-bold mb-4">{feature.title}</CardTitle>
+                  <CardDescription className="text-base text-muted-foreground leading-relaxed font-medium">
+                    {feature.description}
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Education Section */}
-      <section id="education" className="relative py-20 px-4 sm:px-6 lg:px-8 bg-slate-900/50">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
-              Learn About Blockchain Crowdfunding
-            </h2>
-            <p className="text-xl text-slate-300 max-w-2xl mx-auto">
-              Understanding the technology that powers the future of fundraising
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="space-y-8">
-              <div className="bg-slate-800/30 p-6 rounded-xl border border-slate-700">
-                <h3 className="text-2xl font-bold text-white mb-4">What is Blockchain Crowdfunding?</h3>
-                <p className="text-slate-300 leading-relaxed">
-                  Blockchain crowdfunding leverages smart contracts to create transparent, secure, and automated fundraising campaigns. Unlike traditional platforms, funds are held in escrow and released based on predefined conditions.
-                </p>
-              </div>
-              
-              <div className="bg-slate-800/30 p-6 rounded-xl border border-slate-700">
-                <h3 className="text-2xl font-bold text-white mb-4">Why Ethereum?</h3>
-                <p className="text-slate-300 leading-relaxed">
-                  Ethereum&apos;s smart contract capabilities enable programmable money, allowing for complex funding rules, automatic refunds, and transparent fund management without intermediaries.
-                </p>
-              </div>
-              
-              <div className="bg-slate-800/30 p-6 rounded-xl border border-slate-700">
-                <h3 className="text-2xl font-bold text-white mb-4">Benefits for Creators</h3>
-                <ul className="text-slate-300 space-y-2">
-                  <li>• Lower fees compared to traditional platforms</li>
-                  <li>• Global reach without geographic restrictions</li>
-                  <li>• Transparent fund tracking and management</li>
-                  <li>• Automated refunds if goals aren&apos;t met</li>
-                </ul>
-              </div>
+      {/* Trustless Section */}
+      <section className="py-32">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-foreground text-background rounded-[48px] overflow-hidden p-8 md:p-20 relative">
+            <div className="absolute top-0 right-0 p-20 opacity-10 pointer-events-none">
+              <Layers className="w-96 h-96" />
             </div>
             
-            <div className="bg-gradient-to-br from-purple-500/20 to-blue-500/20 p-8 rounded-2xl border border-purple-500/30">
-              <h3 className="text-2xl font-bold text-white mb-6">How It Works</h3>
+            <div className="max-w-3xl relative z-10 space-y-12">
               <div className="space-y-6">
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold">1</div>
-                  <div>
-                    <h4 className="text-white font-semibold">Create Campaign</h4>
-                    <p className="text-slate-300 text-sm">Set your funding goal, deadline, and campaign details</p>
-                  </div>
+                <Badge variant="outline" className="border-background/20 text-background bg-background/5">How it works</Badge>
+                <h2 className="text-4xl md:text-6xl font-black tracking-tight leading-none">
+                  Smart contracts <br /> are your escrow.
+                </h2>
+                <p className="text-xl text-background/70 font-medium leading-relaxed">
+                  Funds are never held by a central entity. They are secured by code on the Ethereum blockchain, ensuring creators get paid when goals are met, and backers are protected if they aren't.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-8 border-t border-background/10">
+                <div className="space-y-2">
+                  <h4 className="text-xl font-bold">100% Accountable</h4>
+                  <p className="text-sm text-background/60">Every transaction is visible on-chain for total transparency.</p>
                 </div>
-                
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold">2</div>
-                  <div>
-                    <h4 className="text-white font-semibold">Deploy Smart Contract</h4>
-                    <p className="text-slate-300 text-sm">Your campaign is secured by blockchain technology</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold">3</div>
-                  <div>
-                    <h4 className="text-white font-semibold">Receive Donations</h4>
-                    <p className="text-slate-300 text-sm">Backers contribute ETH to your campaign</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold">4</div>
-                  <div>
-                    <h4 className="text-white font-semibold">Automatic Execution</h4>
-                    <p className="text-slate-300 text-sm">Funds released when goals are met, or refunded if not</p>
-                  </div>
+                <div className="space-y-2">
+                  <h4 className="text-xl font-bold">Automated Refunds</h4>
+                  <p className="text-sm text-background/60">If a project fails to meet its goal, backers get their money back instantly.</p>
                 </div>
               </div>
             </div>
@@ -257,33 +162,26 @@ const Index = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="relative py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
-            Ready to Launch Your Campaign?
+      <section className="py-32 text-center">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+          <h2 className="text-4xl md:text-7xl font-black tracking-tight leading-none">
+            Join the decentralized <br /> funding revolution.
           </h2>
-          <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
-            Join thousands of creators who have successfully funded their projects with our platform
+          <p className="text-xl md:text-2xl text-muted-foreground font-medium">
+            Start your campaign today and reach a global network of backers.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8">
             <Link href="/create-campaign">
-            <Button 
-              size="lg" 
-              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-3 text-lg font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-            >
-              Start Your Campaign
-            </Button>
+              <Button size="lg" className="h-20 px-12 text-2xl font-black rounded-3xl shadow-2xl hover:shadow-primary/30 transition-all active:scale-95">
+                Launch My Project
+              </Button>
             </Link>
             
             <Link href="/campaigns"> 
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="border-slate-600 bg-slate-800/50 text-slate-200 hover:bg-slate-700/70 hover:text-white hover:border-slate-500 px-8 py-3 text-lg font-semibold rounded-xl transition-all duration-300"
-            >
-              View Examples
-            </Button>
+              <Button variant="outline" size="lg" className="h-20 px-12 text-2xl font-black rounded-3xl border-2">
+                See Live Stats
+              </Button>
             </Link>
           </div>
         </div>
