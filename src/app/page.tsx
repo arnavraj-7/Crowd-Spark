@@ -1,20 +1,14 @@
 "use client";
-import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowDown, Zap, Shield, Clock, TrendingUp, Users, Coins, BookOpen, ChevronRight, Globe, Layers, ArrowRight } from "lucide-react";
+import { Zap, Shield, Clock, TrendingUp, Users, Coins, BookOpen, Globe, Layers, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useContractStore } from "@/stores/contractsStore";
 import { motion } from "framer-motion";
 
 const Index = () => {
-  const [isVisible, setIsVisible] = useState(false);
   const { numberOfCampaigns } = useContractStore();
-  
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
 
   const stats = [
     { icon: TrendingUp, label: "Total Raised", value: "$4.3M+", color: "text-emerald-500" },
@@ -142,7 +136,7 @@ const Index = () => {
                   Smart contracts <br /> are your escrow.
                 </h2>
                 <p className="text-xl text-background/70 font-medium leading-relaxed">
-                  Funds are never held by a central entity. They are secured by code on the Ethereum blockchain, ensuring creators get paid when goals are met, and backers are protected if they aren't.
+                  Funds are never held by a central entity. They are secured by code on the Ethereum blockchain, ensuring creators get paid when goals are met, and backers are protected if they aren&apos;t.
                 </p>
               </div>
 

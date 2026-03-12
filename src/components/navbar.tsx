@@ -3,13 +3,12 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Zap } from "lucide-react";
 import { useContractStore } from "@/stores/contractsStore";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { connectWallet, isConnected, addTestNet, correctChain } = useContractStore();
-  const pathname = usePathname();
   const router = useRouter();
 
   const toggleMenu = () => {

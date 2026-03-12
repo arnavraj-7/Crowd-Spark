@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
@@ -9,9 +9,7 @@ import {
   Clock,
   ArrowLeft,
   Plus,
-  Info,
   TrendingUp,
-  Users,
   Wallet,
   ChevronRight,
 } from "lucide-react";
@@ -38,7 +36,7 @@ const tagIcons: Record<string, string> = {
 const Campaigns = () => {
   const router = useRouter();
   const [tag, setTag] = useState<string>("All");
-  const { isLoading, connectWallet, getAllCampaigns, isConnected, allCampaigns, isfetching, sortedCampaigns } = useContractStore();
+  const { connectWallet, getAllCampaigns, isConnected, allCampaigns, isfetching, sortedCampaigns } = useContractStore();
   const [taggedCampaigns, setTaggedCampaigns] = useState<ProcessedCampaign[]>([]);
 
   useEffect(() => {
